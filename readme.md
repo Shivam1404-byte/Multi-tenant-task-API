@@ -15,3 +15,6 @@ Node.js | Express | Prisma | PostgreSQL | JWT
 
 ## Status
 In active development 🚧
+
+Auth flow implemented: admin approval + pending user restriction
+

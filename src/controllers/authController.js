@@ -144,7 +144,6 @@ const login = async (req,res)=>{
             process.env.JWT_SECRET,
             {expiresIn:'7d'}
         );
-
         res.json({
             message:"Login Successful",
             token,
@@ -170,7 +169,7 @@ const approveUser = async (req,res)=>{
         return res.status(404).json({Error:"User not found"})
     }
 
-    if(user.orgId == req.user.orgId){
+    if(user.orgId !== req.user.orgId){
         return res.status(401).json({Error:"You are not allowed to change the status of another organisation"})
     }
 
@@ -192,4 +191,4 @@ const approveUser = async (req,res)=>{
     })
 }
 
-module.exports = {register,login,approveUser}
+module.exports = { register,login,approveUser }
