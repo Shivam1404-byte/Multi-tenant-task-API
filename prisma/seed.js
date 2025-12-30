@@ -14,7 +14,8 @@ async function main() {
         'task:update',
         'task:delete',
         'user:invite',
-        'org:manage'
+        'org:manage',
+        'task:view'
     ]
 
 
@@ -71,6 +72,21 @@ async function main() {
             },
             update:{},
             create: {roleId: editor.id, permissionId: perm.id}
+        })
+    }
+
+    const viewerKeys = ['task:view']
+    for(const key of viewerKeys){
+        const perm = allperms.find(p => p.key === key)
+        await prisma.rolePermission.upsert({
+            where:{
+                roleId_permissionId:{
+                    roleId:viewer.id,
+                    permissionId:perm.id
+                }
+            },
+            update:{},
+            create:{roleId:viewer.id,permissionId:perm.id}
         })
     }
 

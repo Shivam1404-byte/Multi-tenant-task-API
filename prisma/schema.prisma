@@ -15,12 +15,18 @@ model Organisation {
   userRoles UserRole[]
 }
 
+enum userStatus {
+  PENDING
+  ACTIVE
+}
+
 model User {
   id           String       @id @default(uuid())
   email        String       @unique
   passwordHash String
   orgId        String
   createdAt    DateTime     @default(now())
+  status       userStatus   @default(PENDING)
   org          Organisation @relation(fields: [orgId], references: [id])
 
   userRoles UserRole[]

@@ -19,6 +19,10 @@ const register = async (req,res)=>{
             return res.status(401).json({message:"User already Exist"})
         }
 
+        if (password.length < 6){
+            return res.status(401).json({Message:"Your password is too short"})
+        }
+
         const passwordHash = await bcrypt.hash(password,10)
 
         const result = await prisma.$transaction( async (tx) => {
@@ -53,6 +57,13 @@ const register = async (req,res)=>{
                         roleId:adminRole.id
                     }
                 })
+
+                await tx.user.update({
+                    where:{email:email},
+                    data:{
+                        status:"ACTIVE"
+                    }
+                })
             }
             else{
                 const Role = await tx.role.findUnique({where:{'name': 'VIEWER'}})
@@ -69,9 +80,16 @@ const register = async (req,res)=>{
             return {user,org}
         })
         
+        const token = jwt.sign(
+            {userId:result.id,orgId:result.orgId},
+            process.env.JWT_SECRET,
+            {expiresIn:'7d'}
+        );
+
         res.json({
             Message:"User created successfully",
-            User:result.user
+            User:result.user,
+            token
         })
     }
     catch(error){
@@ -84,7 +102,7 @@ const login = async (req,res)=>{
     const {email,password,Role:requestedRole} = req.body
     try{
         if (!email || !password || !requestedRole) {
-            res.status(401).json({Message:"Email, Password and role are required"})
+            res.status(401).json({Message:"Email, Password and Role are required"})
         }
 
         const user = await prisma.user.findUnique(
@@ -111,12 +129,18 @@ const login = async (req,res)=>{
 
         const allowedRoles = user.userRoles.map(r => r.role.name)
 
+
+
         if(!allowedRoles.includes(requestedRole)){
             return res.status(401).json({message:"You are not allowed to login as this role"})
         }
 
+        if (user.status == 'PENDING'){
+            return res.status(401).json({Message:"Admin has not approved to join yet!!"})
+        }
+
         const token = jwt.sign(
-            {userId:user.id, role:requestedRole},
+            {userId:user.id,orgId:user.orgId},
             process.env.JWT_SECRET,
             {expiresIn:'7d'}
         );
@@ -133,4 +157,39 @@ const login = async (req,res)=>{
     }
 }
 
-module.exports = {register,login}
+const approveUser = async (req,res)=>{
+    const {email} = req.body
+
+    if(!email){
+        return res.status(401).json({message:"Email is required"})
+    }
+
+    const user = await prisma.user.findUnique({where:{email}})
+
+    if(!user){
+        return res.status(404).json({Error:"User not found"})
+    }
+
+    if(user.orgId == req.user.orgId){
+        return res.status(401).json({Error:"You are not allowed to change the status of another organisation"})
+    }
+
+    if (user.status != 'PENDING'){
+        return res.status(400).json({Error:"User is not pending"})
+    }
+
+    const updatedUser = await prisma.user.update({
+        where:{email:email},
+        data:{
+            status:'ACTIVE'
+        }
+    })
+
+    res.json({
+        success:true,
+        Message:"User updated Successfully",
+        user:updatedUser
+    })
+}
+
+module.exports = {register,login,approveUser}
