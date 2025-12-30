@@ -102,7 +102,7 @@ const login = async (req,res)=>{
     const {email,password,Role:requestedRole} = req.body
     try{
         if (!email || !password || !requestedRole) {
-            res.status(401).json({Message:"Email, Password and Role are required"})
+            return res.status(401).json({Message:"Email, Password and Role are required"})
         }
 
         const user = await prisma.user.findUnique(
