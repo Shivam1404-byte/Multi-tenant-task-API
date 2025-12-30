@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organisation {
+  id    String @id @default(uuid())
+  name  String @unique
+  users User[]
+
+  userRoles UserRole[]
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  orgId        String
+  createdAt    DateTime     @default(now())
+  org          Organisation @relation(fields: [orgId], references: [id])
+
+  userRoles UserRole[]
+}
+
+model Role {
+  id   String @id @default(uuid())
+  name String @unique
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  key         String  @unique
+  description String?
+
+  rolePermissions RolePermission[]
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  orgId  String
+  roleId String
+
+  user User         @relation(fields: [userId], references: [id])
+  org  Organisation @relation(fields: [orgId], references: [id])
+  role Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, orgId])
+}
+
+model RolePermission {
+  id           String @id @default(uuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}

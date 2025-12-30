@@ -1,0 +1,26 @@
+{
+  "name": "multi-tenat-task-api",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.2",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "prisma": "^5.10.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
