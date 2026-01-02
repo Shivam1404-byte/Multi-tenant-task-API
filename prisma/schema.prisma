@@ -28,8 +28,11 @@ model User {
   createdAt    DateTime     @default(now())
   status       userStatus   @default(PENDING)
   org          Organisation @relation(fields: [orgId], references: [id])
+  taskCreated  Task[]
+  taskAssigned  Task[] @relation("AssignedTasks")
 
   userRoles UserRole[]
+
 }
 
 model Role {
@@ -70,4 +73,20 @@ model RolePermission {
   permission Permission @relation(fields: [permissionId], references: [id])
 
   @@unique([roleId, permissionId])
+}
+
+
+model Task {
+  id          String  @id  @default(uuid())
+  title       String
+  description String?
+  status      String  @default("OPEN")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  assignedToId  String?
+  assignedTo    User?  @relation("AssignedTasks", fields: [assignedToId], references: [id])
 }

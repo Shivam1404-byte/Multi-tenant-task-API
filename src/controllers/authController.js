@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {PrismaClient} = require('@prisma/client')
 const bcrypt = require('bcrypt')
+const { validateEmail,validatePassword } = require('../uitls/validation')
 require('dotenv').config()
 const prisma = new PrismaClient()
 
@@ -19,7 +20,11 @@ const register = async (req,res)=>{
             return res.status(401).json({message:"User already Exist"})
         }
 
-        if (password.length < 6){
+        if(validateEmail(email)){
+            return res.status(401).json({Message:"Invalid Email format"})
+        }
+
+        if (validatePassword(password)){
             return res.status(401).json({Message:"Your password is too short"})
         }
 

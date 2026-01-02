@@ -38,4 +38,18 @@ const middleware = async (req,res,next)=>{
     }
 }
 
-module.exports = {middleware}
+const errorHandler = (err,req,res,next) => {
+    console.error(err.stack)
+
+    if(err.name === 'JsonWebTokenError'){
+        return res.status(401).json({Error:"Invalid token"})
+    }
+
+    if(err.name === 'TokenExpiredError'){
+        return res.status(401).json({Error:"Token Expired"})
+    }
+
+    res.status(500).json({Error:"Something went wrong"})
+}
+
+module.exports = {middleware,errorHandler}
