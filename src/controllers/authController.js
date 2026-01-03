@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {PrismaClient} = require('@prisma/client')
 const bcrypt = require('bcrypt')
-const { validateEmail,validatePassword } = require('../uitls/validation')
+const { validateEmail,validatePassword } = require('../utils/validation')
 require('dotenv').config()
 const prisma = new PrismaClient()
 

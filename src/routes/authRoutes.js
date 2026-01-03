@@ -1,7 +1,7 @@
 const {register,login,approveUser} = require('../controllers/authController')
 const {promote,demote} = require('../controllers/changeRole')
 const {requireAdmin} = require('../middleware/requireAdmin')
-const {middleware} = require('../middleware/middleware')
+const {middleware} = require('../middleware/Middleware')
 const express = require('express')
 
 const router = express.Router()

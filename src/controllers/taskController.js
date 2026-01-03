@@ -76,21 +76,21 @@ const updateTask = async (req,res)=>{
 const deleteTask = async (req,res)=>{
     try{
         const userId = req.user.id
-        const id = req.params
+        const {id} = req.params
 
         const task = await prisma.task.findUnique({
             where:{id:id}
         })
 
         if(!task){
-            res.status(404).json({Message:"Task not found"})
+            return res.status(404).json({Message:"Task not found"})
         }
 
-        const deletetask = await prisma.task.delete({where:{id:task.id}})
+        await prisma.task.delete({ where: { id } });
 
         res.json({
             Message:"Task deleted successfully",
-            deletetask
+            task
         })
     }
     catch(err){

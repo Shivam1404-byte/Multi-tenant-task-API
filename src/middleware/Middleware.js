@@ -52,4 +52,30 @@ const errorHandler = (err,req,res,next) => {
     res.status(500).json({Error:"Something went wrong"})
 }
 
-module.exports = {middleware,errorHandler}
+function permission(permissionName) {
+    return async (req,res,next)=>{
+        const userId = req.user.id
+
+        const permissions = await prisma.permission.findMany({
+            where:{
+                roles:{
+                    some:{
+                        users:{
+                            some:{userId}
+                        }
+                    }
+                }
+            }
+        });
+
+        const allowed = permissions.some(p => p.name === permissionName)
+
+        if(!allowed){
+            return res.status(403).json({Message:"Permission denied"})
+        }
+
+        next()
+    }
+}
+
+module.exports = {middleware,errorHandler,permission}

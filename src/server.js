@@ -2,7 +2,7 @@ const express = require('express')
 require('dotenv').config
 const authRoute = require('./routes/authRoutes')
 const taskRoute = require('./routes/taskRoutes')
-const {errorHandler} = require('./middleware/middleware')
+const {errorHandler} = require('./middleware/Middleware')
 
 const app = express()
 app.use(express.json())
