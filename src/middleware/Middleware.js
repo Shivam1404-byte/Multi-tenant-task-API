@@ -75,7 +75,7 @@ function permission(permissionName) {
             }
         });
 
-        const permissions = result.flatMap(ur => ur.role.rolePermissions).map(rp => rp.permission.name);
+        const permissions = result.flatMap(ur => ur.role.rolePermissions).map(rp => rp.permission.key);
 
         if(!permissions.includes(permissionName)){
             return res.status(403).json({Message:"Permission denied"})
