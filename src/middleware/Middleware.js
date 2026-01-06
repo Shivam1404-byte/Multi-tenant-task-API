@@ -56,21 +56,28 @@ function permission(permissionName) {
     return async (req,res,next)=>{
         const userId = req.user.id
 
-        const permissions = await prisma.permission.findMany({
+        const result = await prisma.userRole.findMany({
             where:{
-                roles:{
-                    some:{
-                        users:{
-                            some:{userId}
+               userId:req.user.id
+            },
+            select:{
+                role:{
+                    select:{
+                        rolePermissions:{
+                            select:{
+                                permission:{
+                                    select:{ key:true }
+                                }
+                            }
                         }
                     }
                 }
             }
         });
 
-        const allowed = permissions.some(p => p.name === permissionName)
+        const permissions = result.flatMap(ur => ur.role.rolePermissions).map(rp => rp.permission.name);
 
-        if(!allowed){
+        if(!permissions.includes(permissionName)){
             return res.status(403).json({Message:"Permission denied"})
         }
 

@@ -60,7 +60,7 @@ async function main() {
     }
 
     //Editor permissions
-    const editorKeys = ['task:create','task:update']
+    const editorKeys = ['task:create','task:update','task:view']
     for(const key of editorKeys){
         const perm = allperms.find(p => p.key === key)
         await prisma.rolePermission.upsert({
