@@ -18,6 +18,7 @@ model Organisation {
 enum userStatus {
   PENDING
   ACTIVE
+  REJECTED
 }
 
 model User {

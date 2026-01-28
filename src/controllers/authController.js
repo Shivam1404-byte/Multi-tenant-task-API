@@ -20,13 +20,13 @@ const register = async (req,res)=>{
             return res.status(401).json({message:"User already Exist"})
         }
 
-        if(validateEmail(email)){
-            return res.status(401).json({Message:"Invalid Email format"})
-        }
+        // if(validateEmail(email)){
+        //     return res.status(401).json({Message:"Invalid Email format"})
+        // }
 
-        if (validatePassword(password)){
-            return res.status(401).json({Message:"Your password is too short"})
-        }
+        // if (validatePassword(password)){
+        //     return res.status(401).json({Message:"Your password is too short"})
+        // }
 
         const passwordHash = await bcrypt.hash(password,10)
 
@@ -144,6 +144,10 @@ const login = async (req,res)=>{
             return res.status(401).json({Message:"Admin has not approved to join yet!!"})
         }
 
+        if (user.status == 'REJECTED'){
+            return res.status(400).json({Message:"You are not allowed to join the organsatiion"})
+        }
+
         const token = jwt.sign(
             {userId:user.id,orgId:user.orgId},
             process.env.JWT_SECRET,
@@ -163,6 +167,7 @@ const login = async (req,res)=>{
 
 const approveUser = async (req,res)=>{
     const {email} = req.body
+    const {request} =  req.param
 
     if(!email){
         return res.status(401).json({message:"Email is required"})
@@ -182,12 +187,25 @@ const approveUser = async (req,res)=>{
         return res.status(400).json({Error:"User is not pending"})
     }
 
-    const updatedUser = await prisma.user.update({
+    if(request == 'ACTIVE'){
+        const updatedUser = await prisma.user.update({
         where:{email:email},
         data:{
             status:'ACTIVE'
         }
     })
+    }
+    else if(request == 'REJECTED'){
+        const updatedUser = await prisma.user.update({
+        where:{email:email},
+        data:{
+            status:'REJECTED'
+        }
+    })
+    }
+    else{
+        return res.status(400).json({Message:"Invalid paramaeters"})
+    }
 
     res.json({
         success:true,

@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.post('/register',register)
 router.post('/login',login)
-router.post('/approveUser',middleware,requireAdmin,approveUser)
+router.post('/approveUser/:request',middleware,requireAdmin,approveUser)
 router.post('/promote',middleware,requireAdmin,promote)
 
 module.exports = router
