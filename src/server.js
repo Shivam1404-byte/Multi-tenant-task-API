@@ -1,8 +1,13 @@
 const express = require('express')
-require('dotenv').config
+const env = require('dotenv')
 const authRoute = require('./routes/authRoutes')
 const taskRoute = require('./routes/taskRoutes')
 const {errorHandler} = require('./middleware/Middleware')
+dotenv = env.config()
+
+dotenv.config({
+  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env"
+});
 
 const app = express()
 app.use(express.json())
@@ -21,3 +26,5 @@ app.get('/',(req,res)=>{
 app.listen(port,()=>{
     console.log("App is running")
 })
+
+module.exports = app;

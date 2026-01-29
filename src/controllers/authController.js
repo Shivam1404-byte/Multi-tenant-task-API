@@ -166,8 +166,7 @@ const login = async (req,res)=>{
 }
 
 const approveUser = async (req,res)=>{
-    const {email} = req.body
-    const {request} =  req.param
+    const {email,request} = req.body
 
     if(!email){
         return res.status(401).json({message:"Email is required"})
